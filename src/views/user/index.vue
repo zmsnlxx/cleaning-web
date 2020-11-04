@@ -40,7 +40,9 @@
       </el-table-column>
       <el-table-column label="职位" align="center">
         <template slot-scope="scope">
-          {{ options.find(item => item.value === scope.row.position).label }}
+          <span v-for="i in scope.row.position.split(',')" :key="i">
+            {{ options.find(item => item.value === i).label }}
+          </span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作">
@@ -73,7 +75,7 @@
           <el-input v-model="form.phone" autocomplete="off" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="职位" label-width="120px" prop="position">
-          <el-select v-model="form.position" placeholder="请选择">
+          <el-select v-model="position" multiple @change="changePosition" placeholder="请选择">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -113,10 +115,10 @@ export default {
     }
     return {
       options: [
-        { label: '保洁', value: 1 },
-        { label: '领班', value: 2 },
-        { label: '主管', value: 3 },
-        { label: '管理员', value: 4 },
+        { label: '保洁', value: '1' },
+        { label: '领班', value: '2' },
+        { label: '主管', value: '3' },
+        { label: '管理员', value: '4' },
       ],
       rules: {
         phone: [{ required: true, trigger: 'blur', validator: checkPhone }],
@@ -132,7 +134,7 @@ export default {
       form: { pername: '', phone: '', position: '', },
       isEdit: false,
       currentId: null,
-
+      position: [],
     }
   },
   created() {
@@ -158,14 +160,26 @@ export default {
           this.fetchData()
         }
       }
+    },
+    position: {
+      handler(val) {
+        this.form.position = val ? val.join(',') : ''
+      }
     }
   },
 
   methods: {
+    changePosition(e) {
+      if ((e.includes('3') || e.includes('4')) && e.length > 1) {
+        this.$message.error('管理员和主管不可多选')
+        this.position = ''
+      }
+    },
     edit (row) {
       this.isEdit = true;
       this.currentId = row.id
       _.assign(this.form, _.pick(row, _.keys(this.form)))
+      this.position = row.position.split(',')
       this.dialogVisible = true
     },
     deleteUser(row) {
