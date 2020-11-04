@@ -15,7 +15,7 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img src="../../../public/img/head.jpg" class="user-avatar" alt="">
+          <img src="/img/head.png" class="user-avatar" alt="">
           <span class="name">{{ name }}</span>
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
