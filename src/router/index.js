@@ -90,6 +90,21 @@ export const constantRoutes = [
   },
 
   {
+    path: '/sign',
+    component: Layout,
+    redirect: '/sign/index',
+    meta: { icon: 'el-icon-s-comment' },
+    children: [
+      {
+        path: 'index',
+        name: 'Sign',
+        component: () => import('@/views/sign/index'),
+        meta: { title: '签到管理', icon: 'el-icon-s-comment' }
+      }
+    ]
+  },
+
+  {
     path: '/mall',
     component: Layout,
     redirect: '/mall/index',
