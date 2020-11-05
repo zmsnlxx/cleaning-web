@@ -174,7 +174,7 @@ export default {
       })
     },
     fetchData() {
-      this.listLoading = false
+      this.listLoading = true
       getCleaningPointList(this.params).then(response => {
         this.list = response.data.list
         this.total = response.data.total

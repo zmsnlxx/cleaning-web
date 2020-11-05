@@ -155,7 +155,7 @@ export default {
       this.fetchData()
     },
     fetchData() {
-      this.listLoading = false
+      this.listLoading = true
       getLeaveList(this.params).then(response => {
         this.list = response.data.list
         this.total = response.data.total

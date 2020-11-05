@@ -2,8 +2,17 @@
   <div class="app-container">
     <div class="search-box">
       <el-form class="left" :model="params" label-width="80px">
-        <el-form-item label="商品名称">
-          <el-input v-model="params.name" clearable placeholder="请输入" />
+        <el-form-item label="姓名">
+          <el-input v-model="params.pername" clearable placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="打卡日期">
+          <el-date-picker
+            v-model="day"
+            type="date"
+            placeholder="选择日期"
+            format="yyyy 年 MM 月 dd 日"
+            value-format="timestamp">
+          </el-date-picker>
         </el-form-item>
         <el-button round plain type="primary" @click="inquire">查询</el-button>
       </el-form>
@@ -21,28 +30,19 @@
           {{ (params.page - 1) * params.pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="商品名称">
+      <el-table-column label="姓名">
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          {{ scope.row.pername }}
         </template>
       </el-table-column>
-      <el-table-column label="库存" align="center">
+      <el-table-column label="打卡时间" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.stock }}</span>
+          <span>{{ parseTime(scope.row.signTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="对应积分" align="center">
+      <el-table-column label="地址" align="center">
         <template slot-scope="scope">
-          {{ scope.row.exchangeIntegral }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        fixed="right"
-        label="操作"
-      >
-        <template slot-scope="scope">
-          <el-button type="text" size="small" @click="deleteRow(scope.row.goodsId)">删除</el-button>
-          <el-button type="text" size="small" @click="edit(scope.row)">修改</el-button>
+          {{ scope.row.oreaddress }}
         </template>
       </el-table-column>
     </el-table>
@@ -57,77 +57,32 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
     </el-pagination>
-
-    <el-dialog :title="`${this.isEdit ? '编辑' : '新增'}商品`" :visible.sync="dialogVisible">
-      <el-form :model="form" ref="form" :rules="rules">
-        <el-form-item label="商品名称" label-width="120px" prop="name">
-          <el-input v-model="form.name" autocomplete="off" placeholder="请输入标题" />
-        </el-form-item>
-        <el-form-item label="商品库存" label-width="120px" prop="stock">
-          <el-input v-model="form.stock" rows="5" type="number" autocomplete="off" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="对应积分" label-width="120px" prop="exchangeIntegral">
-          <el-input v-model="form.exchangeIntegral" type="number" autocomplete="off" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="主图" label-width="120px">
-          <el-upload
-            :show-file-list="false"
-            auto-upload
-            :data="uploadParams"
-            :limit="1"
-            accept="image/*"
-            :on-success="handleSuccess"
-            :before-upload="handlebeforeUpload"
-            action="https://up-z0.qiniup.com"
-            list-type="picture-card">
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon" />
-          </el-upload>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false" class="plain-btn">取 消</el-button>
-        <el-button type="primary" @click="add" class="btn">确 定</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getGoodsList, addGoods, delGoods, getQiNiuToken, updateGoods } from '@/api/mall'
+import { getSignList } from '@/api/sign'
 import { mapGetters } from 'vuex'
 import {saveAs} from 'file-saver'
 import ExcelTable from '@/utils/tableUtil'
+import { parseTime } from '@/utils'
 
-const url = 'http://cdn.fledchina.com/'
 export default {
   data() {
     return {
-      rules: {
-        name: [{ required: true, message: '请输入商品名称' }],
-        stock: [{ required: true, message: '请输入商品库存' }],
-        exchangeIntegral: [{ required: true, message: '请输入对应积分' }],
-      },
+      parseTime,
       total: 0,
       params: {
         page: 1,
         pageSize: 10,
-        search: '',
+        day: '',
+        pername: '',
       },
-      uploadParams: { token: '', key: '' },
+      day: '',
       list: [],
       listLoading: true,
-      dialogVisible: false,
-      form: {
-        name: '',
-        stock: '',
-        exchangeIntegral: '',
-        pic: ''
-      },
-      imageUrl: '',
-      isEdit: false,
-      currentId: null,
-      Excel: null
+      Excel: null,
+      dayText: ''
     }
   },
   async created() {
@@ -135,29 +90,27 @@ export default {
     this.Excel = await import(/* webpackChunkName: "exceljs" */'exceljs')
   },
   computed: {
-    ...mapGetters(['orgId'])
+    ...mapGetters(['orgId', 'org']),
+    orgName() {
+      return this.org.find(item => item.orgid === this.orgId).orgname
+    }
   },
   watch: {
-    dialogVisible: {
-      handler(val) {
-        if (!val) {
-          this.$refs.form.resetFields()
-          this.form = {
-            name: '',
-            stock: '',
-            exchangeIntegral: '',
-            pic: ''
-          }
-          this.isEdit = false
-          this.currentId = null
-          this.imageUrl = ''
-        }
-      },
-    },
     orgId: {
       handler(val) {
         if (val) {
           this.fetchData()
+        }
+      }
+    },
+    day: {
+      handler(val) {
+        if (val) {
+          this.params.day = parseInt(val / 1000)
+          const d = new Date(val)
+          this.dayText = d.getMonth() + 1 + '月' + d.getDate() + '日'
+        } else {
+          this.params.day = ''
         }
       }
     }
@@ -165,21 +118,19 @@ export default {
 
   methods: {
     async download() {
-      // demo 数据格式
+      this.listLoading = true
+      const { pername, day } = this.params
+      const params = { pername, day, page: 1, pageSize: this.total }
+      const { data: { list } } = await getSignList(params)
       const header = [
-        { label: '姓名', width: '120', prop: 'name' },
-        { label: '年龄', width: '120', prop: 'age' },
-        { label: '电话', width: '120', prop: 'tel' },
-        { label: '身高', width: '120', prop: 'high' },
+        { label: '姓名', width: '120', prop: 'pername' },
+        { label: '打卡时间', width: '300', prop: 'signTime' },
+        { label: '地址', width: '400', prop: 'oreaddress' },
       ]
-      const data = [
-        { name: 'lxx', age: 18, tel: '15093408313', high: 178 },
-        { name: 'lxx', age: 18, tel: '15093408313', high: 178 },
-        { name: 'lxx', age: 18, tel: '15093408313', high: 178 },
-        { name: 'lxx', age: 18, tel: '15093408313', high: 178 },
-      ]
-      await this.makeExcel([{ header, data }], 'demo')
+      const data = list.map(item => ({ oreaddress: item.oreaddress, pername: item.pername, signTime: this.parseTime(item.signTime) }))
+      await this.makeExcel([{ header, data }], `${this.orgName}-${this.dayText || '全部'}签到记录`)
       this.$message.success('下载成功！')
+      this.listLoading = false
     },
     async makeExcel(downloadData, name) {
       const wb = new this.Excel.Workbook()
@@ -194,54 +145,9 @@ export default {
 
       saveAs(new Blob([buffer], {type: "application/octet-stream"}), `${name}.xlsx`)
     },
-    edit(row) {
-      this.isEdit = true;
-      this.currentId = row.goodsId
-      _.assign(this.form, _.pick(row, _.keys(this.form)))
-      this.imageUrl = row.pic
-      this.form.pic = row.pic.split('.com/')[1]
-      this.dialogVisible = true
-    },
-    handleSuccess(res) {
-      this.form.pic = res.key
-      this.imageUrl = url + res.key
-    },
-    handlebeforeUpload(file) {
-      this.uploadParams.key = encodeURI(Date.now() + '' + Math.floor(Math.random() * 10000))
-      // 这里做可以做文件校验操作
-      const isImg = /^image\/\w+$/i.test(file.type)
-      if (!isImg) {
-        this.$message.error('只能上传 JPG、PNG、GIF 格式!')
-        return false
-      }
-      return new Promise((resolve, reject) => {
-        getQiNiuToken().then(res => {
-          const { token } = res.data
-          this.uploadParams.token = token
-          resolve(true)
-        }).catch(err => {
-          reject(err)
-        })
-      })
-    },
-    deleteRow(goodsId) {
-      delGoods({ goodsId }).then(() => {
-        this.$message({ message: '删除商品成功', type: 'success' })
-        this.fetchData()
-      })
-    },
-    add() {
-      const api = this.isEdit ? updateGoods : addGoods
-      const params = this.isEdit ? _.assign({}, this.form, { goodsId: this.currentId }) : this.form
-      api(params).then(() => {
-        this.dialogVisible = false
-        this.$message({ message: `${this.isEdit ? '编辑' : '新增'}商品成功`, type: 'success' })
-        this.fetchData()
-      })
-    },
     fetchData() {
-      this.listLoading = false
-      getGoodsList(this.params).then(response => {
+      this.listLoading = true
+      getSignList(this.params).then(response => {
         this.list = response.data.list
         this.total = response.data.total
         this.listLoading = false

@@ -14,7 +14,7 @@
         <el-input ref="username" v-model="loginForm.phone" placeholder="Username" name="username" type="text" tabindex="1" auto-complete="on" />
       </el-form-item>
 
-      <el-form-item prop="password">
+      <el-form-item prop="pwd">
         <span class="svg-container">
           <svg-icon icon-class="password" />
         </span>
@@ -34,33 +34,14 @@
 export default {
   name: 'Login',
   data() {
-    const checkPhone = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error('手机号不能为空'))
-      } else {
-        const reg = /^1[3|4|5|7|8|9|6][0-9]\d{8}$/
-        if (reg.test(value)) {
-          callback()
-        } else {
-          return callback(new Error('请输入正确的手机号'))
-        }
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
-      } else {
-        callback()
-      }
-    }
     return {
       loginForm: {
-        phone: '18749753858',
-        pwd: '123456'
+        phone: '',
+        pwd: ''
       },
       loginRules: {
-        phone: [{ required: true, trigger: 'blur', validator: checkPhone }],
-        pwd: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        phone: [{ required: true, message: '请输入账号', trigger: 'blur' }],
+        pwd: [{ required: true, message: '请输入密码', trigger: 'blur' }]
       },
       loading: false,
       passwordType: 'password',

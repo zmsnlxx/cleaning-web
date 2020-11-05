@@ -125,7 +125,7 @@ export default {
       this.fetchData()
     },
     fetchData() {
-      this.listLoading = false
+      this.listLoading = true
       getIntegralList(this.params).then(response => {
         this.list = response.data.list
         this.total = response.data.total
