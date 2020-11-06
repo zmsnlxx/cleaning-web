@@ -64,8 +64,8 @@
         fixed="right"
         label="操作"
       >
-        <template v-if="scope.row.approval === 1" slot-scope="scope">
-          <el-button type="text" size="small" @click="pass('2', scope.row.leaveId)">通过</el-button>
+        <template v-if="[1,2].includes(scope.row.approval)" slot-scope="scope">
+          <el-button type="text" size="small" @click="pass(3, scope.row.leaveId)">通过</el-button>
           <el-button type="text" size="small" @click="dialogVisible = true; leaveId = scope.row.leaveId">拒绝</el-button>
         </template>
       </el-table-column>
@@ -90,7 +90,7 @@
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false" class="plain-btn">取 消</el-button>
-        <el-button type="primary" @click="pass('3', leaveId, form.reason)" class="btn">确 定</el-button>
+        <el-button type="primary" @click="pass(4, leaveId, form.reason)" class="btn">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -103,7 +103,7 @@ import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
-      approval: ['撤回', '申请中', '通过', '拒绝'],
+      approval: ['撤回', '申请中', '申请中', '通过', '拒绝'],
       form: { reason: '' },
       leaveId: '',
       options: [
@@ -142,6 +142,7 @@ export default {
       updateLeave({ leaveId, approval, reason }).then(() => {
         this.$message({ message: '操作成功', type: 'success' })
         this.dialogVisible = false
+        this.form.reason = ''
         this.fetchData()
       })
     },
