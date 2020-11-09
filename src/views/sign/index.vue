@@ -7,9 +7,17 @@
         </el-form-item>
         <el-form-item label="打卡日期">
           <el-date-picker
-            v-model="day"
+            v-model="startTime"
             type="date"
-            placeholder="选择日期"
+            placeholder="选择开始日期"
+            format="yyyy 年 MM 月 dd 日"
+            value-format="timestamp">
+          </el-date-picker>
+          -
+          <el-date-picker
+            v-model="endTime"
+            type="date"
+            placeholder="选择结束日期"
             format="yyyy 年 MM 月 dd 日"
             value-format="timestamp">
           </el-date-picker>
@@ -66,6 +74,7 @@ import { mapGetters } from 'vuex'
 import {saveAs} from 'file-saver'
 import ExcelTable from '@/utils/tableUtil'
 import { parseTime } from '@/utils'
+import Excel from 'exceljs'
 
 export default {
   data() {
@@ -75,19 +84,20 @@ export default {
       params: {
         page: 1,
         pageSize: 10,
-        day: '',
+        startTime: '',
+        endTime: '',
         pername: '',
       },
-      day: '',
+      startTime: '',
+      endTime: '',
       list: [],
       listLoading: true,
-      Excel: null,
       dayText: ''
     }
   },
   async created() {
     this.fetchData()
-    this.Excel = await import(/* webpackChunkName: "exceljs" */'exceljs')
+    // this.Excel = await import(/* webpackChunkName: "exceljs" */'exceljs')
   },
   computed: {
     ...mapGetters(['orgId', 'org']),
@@ -103,14 +113,25 @@ export default {
         }
       }
     },
-    day: {
+    startTime: {
       handler(val) {
         if (val) {
-          this.params.day = parseInt(val / 1000)
+          this.params.startTime = parseInt(val / 1000)
           const d = new Date(val)
           this.dayText = d.getMonth() + 1 + '月' + d.getDate() + '日'
         } else {
-          this.params.day = ''
+          this.params.startTime = ''
+        }
+      }
+    },
+    endTime: {
+      handler(val) {
+        if (val) {
+          this.params.endTime = parseInt(val / 1000)
+          const d = new Date(val)
+          this.dayText = d.getMonth() + 1 + '月' + d.getDate() + '日'
+        } else {
+          this.params.endTime = ''
         }
       }
     }
@@ -119,8 +140,8 @@ export default {
   methods: {
     async download() {
       this.listLoading = true
-      const { pername, day } = this.params
-      const params = { pername, day, page: 1, pageSize: this.total }
+      const { pername, startTime, endTime } = this.params
+      const params = { pername, startTime, endTime, page: 1, pageSize: this.total }
       const { data: { list } } = await getSignList(params)
       const header = [
         { label: '姓名', width: '120', prop: 'pername' },
@@ -133,7 +154,7 @@ export default {
       this.listLoading = false
     },
     async makeExcel(downloadData, name) {
-      const wb = new this.Excel.Workbook()
+      const wb = new Excel.Workbook()
       this.$lo.each(downloadData, sheet => {
         const ws = wb.addWorksheet(sheet.name)
         const table = new ExcelTable(this.$lo.cloneDeep(sheet.header), sheet.data, sheet.title || name, ws, sheet.desc)
