@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '上海超干净卫生服务',
+  title: '夫得莱保洁管理服务',
 
   /**
    * @type {boolean} true | false
