@@ -38,6 +38,11 @@
           <span>{{ scope.row.phone }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="联系方式" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.contact }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="职位" align="center">
         <template slot-scope="scope">
           <span v-for="i in scope.row.position.split(',')" :key="i">
@@ -73,6 +78,9 @@
         </el-form-item>
         <el-form-item label="手机号" label-width="120px" prop="phone">
           <el-input v-model="form.phone" autocomplete="off" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="联系方式" label-width="120px" prop="contact">
+          <el-input placeholder="请输入" v-model="form.contact" clearable />
         </el-form-item>
         <el-form-item label="职位" label-width="120px" prop="position">
           <el-select v-model="position" multiple @change="changePosition" placeholder="请选择">
@@ -122,6 +130,7 @@ export default {
       ],
       rules: {
         phone: [{ required: true, trigger: 'blur', validator: checkPhone }],
+        contact: [{ required: true, trigger: 'blur', validator: checkPhone }],
         position: [{ required: true, message: '请选择职位' }],
         pername: [{ required: true, message: '请输入姓名' }],
       },
@@ -131,7 +140,7 @@ export default {
       list: [],
       listLoading: true,
       loading: false,
-      form: { pername: '', phone: '', position: '', },
+      form: { pername: '', phone: '', position: '', contact: '' },
       isEdit: false,
       currentId: null,
       position: [],
