@@ -157,7 +157,8 @@ export default {
       handler(val) {
         if (!val) {
           this.$refs.form.resetFields()
-          this.form = { pername: '', phone: '', position: '', }
+          this.form = { pername: '', phone: '', position: '', contact: '' }
+          this.position = ''
           this.isEdit = false
           this.currentId = null
         }

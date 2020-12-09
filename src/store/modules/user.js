@@ -23,6 +23,7 @@ const mutations = {
     state.name = name
   },
   SET_ORG: (state, org) => {
+    org.push(org.shift())
     state.org = org
   },
 }
