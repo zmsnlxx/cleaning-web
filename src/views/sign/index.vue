@@ -7,6 +7,7 @@
         </el-form-item>
         <el-form-item label="打卡日期">
           <el-date-picker
+            class="date-pick"
             v-model="startTime"
             type="date"
             placeholder="选择开始日期"
@@ -43,9 +44,14 @@
           {{ scope.row.pername }}
         </template>
       </el-table-column>
-      <el-table-column label="打卡时间" align="center">
+      <el-table-column label="第一次打卡时间" align="center">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.signTime) }}</span>
+          <span>{{ parseTime(scope.row.signStartTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="第二次打卡时间" align="center">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.signEndTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="地址" align="center">
@@ -190,6 +196,14 @@ export default {
   },
 }
 </script>
+<style>
+  .today span{
+    font-weight: 700;
+    background: #489F93;
+    color: white !important;
+    border-radius: 50% 50%;
+  }
+</style>
 <style lang="scss" scoped>
   .avatar {
     width: 100%;
