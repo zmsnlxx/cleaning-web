@@ -74,6 +74,21 @@ export const constantRoutes = [
   },
 
   {
+    path: '/report',
+    component: Layout,
+    redirect: '/report/index',
+    meta: { icon: 'el-icon-s-grid' },
+    children: [
+      {
+        path: 'index',
+        name: 'Report',
+        component: () => import('@/views/report/index'),
+        meta: { title: '报表管理', icon: 'el-icon-s-home' }
+      }
+    ]
+  },
+
+  {
     path: '/holiday',
     component: Layout,
     redirect: '/holiday/index',
