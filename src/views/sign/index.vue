@@ -151,10 +151,11 @@ export default {
       const { data: { list } } = await getSignList(params)
       const header = [
         { label: '姓名', width: '120', prop: 'pername' },
-        { label: '打卡时间', width: '300', prop: 'signTime' },
+        { label: '第一次打卡时间', width: '300', prop: 'signStartTime' },
+        { label: '第二次打卡时间', width: '300', prop: 'signEndTime' },
         { label: '地址', width: '400', prop: 'oreaddress' },
       ]
-      const data = list.map(item => ({ oreaddress: item.oreaddress, pername: item.pername, signTime: this.parseTime(item.signTime) }))
+      const data = list.map(item => ({ oreaddress: item.oreaddress, pername: item.pername, signStartTime: this.parseTime(item.signStartTime), signEndTime: this.parseTime(item.signEndTime) }))
       await this.makeExcel([{ header, data }], `${this.orgName}-${this.dayText || '全部'}签到记录`)
       this.$message.success('下载成功！')
       this.listLoading = false
