@@ -2,10 +2,7 @@
   <div class="app-container">
     <div class="search-box">
       <el-form class="left" :model="params" label-width="80px">
-        <el-form-item label="姓名">
-          <el-input v-model="params.pername" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="打卡日期">
+        <el-form-item label="申领时间">
           <el-date-picker
             class="date-pick"
             v-model="startTime"
@@ -39,22 +36,17 @@
           {{ (params.page - 1) * params.pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="姓名">
+      <el-table-column label="申领时间">
         <template slot-scope="scope">
-          {{ scope.row.pername }}
+          {{ parseTime(scope.row.signStartTime) }}
         </template>
       </el-table-column>
-      <el-table-column label="第一次打卡时间" align="center">
+      <el-table-column label="名称" align="center">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.signStartTime) }}</span>
+          <span>{{ scope.row.pername }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="第二次打卡时间" align="center">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.signEndTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="地址" align="center">
+      <el-table-column label="数量" align="center">
         <template slot-scope="scope">
           {{ scope.row.oreaddress }}
         </template>
@@ -92,19 +84,17 @@ export default {
         pageSize: 10,
         startTime: '',
         endTime: '',
-        pername: '',
       },
       startTime: '',
       endTime: '',
       list: [],
       listLoading: true,
-      endDayText: '',
-      startDayText: ''
+      startDayText: '',
+      endDayText: ''
     }
   },
   async created() {
     this.fetchData()
-    // this.Excel = await import(/* webpackChunkName: "exceljs" */'exceljs')
   },
   computed: {
     ...mapGetters(['orgId', 'org']),
@@ -151,13 +141,12 @@ export default {
       const params = { pername, startTime, endTime, page: 1, pageSize: this.total }
       const { data: { list } } = await getSignList(params)
       const header = [
-        { label: '姓名', width: '120', prop: 'pername' },
-        { label: '第一次打卡时间', width: '300', prop: 'signStartTime' },
-        { label: '第二次打卡时间', width: '300', prop: 'signEndTime' },
-        { label: '地址', width: '400', prop: 'oreaddress' },
+        { label: '申领时间', width: '300', prop: 'signStartTime' },
+        { label: '名称', width: '300', prop: 'pername' },
+        { label: '数量', width: '400', prop: 'oreaddress' },
       ]
-      const data = list.map(item => ({ oreaddress: item.oreaddress, pername: item.pername, signStartTime: this.parseTime(item.signStartTime), signEndTime: this.parseTime(item.signEndTime) }))
-      await this.makeExcel([{ header, data }], `${this.startDayText}-${this.endDayText}签到记录`)
+      const data = list.map(item => ({ oreaddress: item.oreaddress, pername: item.pername, signStartTime: this.parseTime(item.signStartTime) }))
+      await this.makeExcel([{ header, data }], `${this.startDayText ? this.startDayText + '-' : ''}${this.endDayText}申领记录`)
       this.$message.success('下载成功！')
       this.listLoading = false
     },
@@ -199,60 +188,60 @@ export default {
 }
 </script>
 <style>
-  .today span{
-    font-weight: 700;
-    background: #489F93;
-    color: white !important;
-    border-radius: 50% 50%;
-  }
+.today span{
+  font-weight: 700;
+  background: #489F93;
+  color: white !important;
+  border-radius: 50% 50%;
+}
 </style>
 <style lang="scss" scoped>
-  .avatar {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-  .search-box {
-    width: 100%;
+.avatar {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.search-box {
+  width: 100%;
+  display: flex;
+  margin-bottom: 10px;
+  justify-content: space-between;
+
+  .left {
     display: flex;
-    margin-bottom: 10px;
-    justify-content: space-between;
 
-    .left {
+    .userinfo-list {
       display: flex;
+      margin-right: 50px;
 
-      .userinfo-list {
-        display: flex;
-        margin-right: 50px;
-
-        span {
-          display: inline-block;
-          min-width: 48px;
-          height: 40px;
-          line-height: 40px;
-          margin-right: 30px;
-        }
-      }
-
-      .query-btn {
-        color: #489F93;
-        border-color: #489F93;
+      span {
+        display: inline-block;
+        min-width: 48px;
+        height: 40px;
+        line-height: 40px;
+        margin-right: 30px;
       }
     }
 
-    .right {
-      display: flex;
-
-      .add-btn {
-        background-color: #489F93;
-        color: #FFFFFF;
-      }
+    .query-btn {
+      color: #489F93;
+      border-color: #489F93;
     }
+  }
 
-  }
-  .el-pagination {
+  .right {
     display: flex;
-    justify-content: flex-end;
-    margin-top: 10px;
+
+    .add-btn {
+      background-color: #489F93;
+      color: #FFFFFF;
+    }
   }
+
+}
+.el-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
 </style>

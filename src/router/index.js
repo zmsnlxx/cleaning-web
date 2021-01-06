@@ -179,6 +179,51 @@ export const constantRoutes = [
     ]
   },
 
+  {
+    path: '/warehouse',
+    component: Layout,
+    redirect: '/warehouse/index',
+    meta: { icon: 'el-icon-s-comment' },
+    children: [
+      {
+        path: 'index',
+        name: 'Warehouse',
+        component: () => import('@/views/warehouse/index'),
+        meta: { title: '仓库管理', icon: 'el-icon-s-comment' }
+      }
+    ]
+  },
+
+  {
+    path: '/commodity',
+    component: Layout,
+    redirect: '/commodity/index',
+    meta: { icon: 'el-icon-s-comment' },
+    children: [
+      {
+        path: 'index',
+        name: 'Commodity',
+        component: () => import('@/views/commodity/index'),
+        meta: { title: '商品品类', icon: 'el-icon-s-comment' }
+      }
+    ]
+  },
+
+  {
+    path: '/claim',
+    component: Layout,
+    redirect: '/claim/index',
+    meta: { icon: 'el-icon-s-comment' },
+    children: [
+      {
+        path: 'index',
+        name: 'Claim',
+        component: () => import('@/views/claim/index'),
+        meta: { title: '申领记录', icon: 'el-icon-s-comment' }
+      }
+    ]
+  },
+
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
