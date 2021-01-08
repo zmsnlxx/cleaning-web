@@ -15,10 +15,3 @@ export function getWarehouseList(data) {
     params: data
   })
 }
-
-export function getSuppliesTypes() {
-  return request({
-    url: '/admin/supplies/types',
-    method: 'get',
-  })
-}

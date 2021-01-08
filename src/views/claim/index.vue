@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import { getSignList } from '@/api/sign'
+import { getApplyList } from '@/api/claim'
 import { mapGetters } from 'vuex'
 import {saveAs} from 'file-saver'
 import ExcelTable from '@/utils/tableUtil'
@@ -139,7 +139,7 @@ export default {
       this.listLoading = true
       const { pername, startTime, endTime } = this.params
       const params = { pername, startTime, endTime, page: 1, pageSize: this.total }
-      const { data: { list } } = await getSignList(params)
+      const { data: { list } } = await getApplyList(params)
       const header = [
         { label: '申领时间', width: '300', prop: 'signStartTime' },
         { label: '名称', width: '300', prop: 'pername' },
@@ -165,7 +165,7 @@ export default {
     },
     fetchData() {
       this.listLoading = true
-      getSignList(this.params).then(response => {
+      getApplyList(this.params).then(response => {
         this.list = response.data.list
         this.total = response.data.total
         this.listLoading = false

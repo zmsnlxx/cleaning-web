@@ -96,7 +96,8 @@
 </template>
 
 <script>
-import { getWarehouseList, updateWarehouse, getSuppliesTypes } from '@/api/warehouse'
+import { getWarehouseList, updateWarehouse } from '@/api/warehouse'
+import { getSuppliesTypes } from '@/api/supplies'
 import { mapGetters } from 'vuex'
 import {saveAs} from 'file-saver'
 import ExcelTable from '@/utils/tableUtil'
