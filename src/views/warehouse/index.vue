@@ -123,6 +123,7 @@ export default {
         pageSize: 10,
         type: '',
       },
+      warehouseId: '',
       list: [],
       listLoading: true,
       dialogVisible: false,
@@ -161,7 +162,7 @@ export default {
 
   methods: {
     updateNum() {
-      updateWarehouse({ stock: Number(this.stock) }).then(() => {
+      updateWarehouse({ stock: Number(this.stock), warehouseId: this.warehouseId }).then(() => {
         this.$message.success('调整成功！')
         this.dialogVisible = false
         this.fetchData()
@@ -169,6 +170,7 @@ export default {
     },
     open(row) {
       this.row = row
+      this.warehouseId = row.warehouseId
       this.stock = row.stock
       this.dialogVisible = true
     },
