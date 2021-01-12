@@ -38,17 +38,17 @@
       </el-table-column>
       <el-table-column label="申领时间">
         <template slot-scope="scope">
-          {{ parseTime(scope.row.signStartTime) }}
+          {{ parseTime(scope.row.createTime) }}
         </template>
       </el-table-column>
       <el-table-column label="名称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.pername }}</span>
+          <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="数量" align="center">
         <template slot-scope="scope">
-          {{ scope.row.oreaddress }}
+          {{ scope.row.num }}{{ scope.row.unit }}
         </template>
       </el-table-column>
     </el-table>
@@ -141,11 +141,11 @@ export default {
       const params = { pername, startTime, endTime, page: 1, pageSize: this.total }
       const { data: { list } } = await getApplyList(params)
       const header = [
-        { label: '申领时间', width: '300', prop: 'signStartTime' },
-        { label: '名称', width: '300', prop: 'pername' },
-        { label: '数量', width: '400', prop: 'oreaddress' },
+        { label: '申领时间', width: '300', prop: 'createTime' },
+        { label: '名称', width: '300', prop: 'name' },
+        { label: '数量', width: '400', prop: 'num' },
       ]
-      const data = list.map(item => ({ oreaddress: item.oreaddress, pername: item.pername, signStartTime: this.parseTime(item.signStartTime) }))
+      const data = list.map(item => ({ createTime: this.parseTime(item.createTime), name: item.name, num: `${item.num}${item.unit}` }))
       await this.makeExcel([{ header, data }], `${this.startDayText ? this.startDayText + '-' : ''}${this.endDayText}申领记录`)
       this.$message.success('下载成功！')
       this.listLoading = false
