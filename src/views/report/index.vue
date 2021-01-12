@@ -53,19 +53,14 @@
           {{ scope.row.pername }}
         </template>
       </el-table-column>
-      <el-table-column label="标题">
+      <el-table-column label="类型" align="center">
         <template slot-scope="scope">
-          {{ scope.row.title }}
+          {{ scope.row.type === 1 ? '周报' : '月报' }}
         </template>
       </el-table-column>
       <el-table-column label="提交时间" align="center">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="类型" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.type === 1 ? '周报' : '月报' }}
         </template>
       </el-table-column>
       <el-table-column
@@ -89,12 +84,37 @@
       :total="total">
     </el-pagination>
 
-    <el-dialog title="提示" :visible.sync="dialogVisible" width="50%">
+    <el-dialog title="周报/月报详情" :visible.sync="dialogVisible" width="50%">
       <div class="header">
-        <span>{{ row.title }}</span>
-        <span>{{ parseTime(row.createTime) }}</span>
+        <div class="item">
+          <div class="label">提交人</div>
+          <div class="value">{{ row.pername }}</div>
+        </div>
+        <div class="item">
+          <div class="label">类型</div>
+          <div class="value">{{ row.type === 1 ? '周报' : '月报' }}</div>
+        </div>
+        <div class="item">
+          <div class="label">提交时间</div>
+          <div class="value">{{ parseTime(row.createTime) }}</div>
+        </div>
       </div>
-      <div class="content">{{ row.content }}</div>
+      <div class="content">
+        <div class="item" v-for="(item, index) in row.content" :key="index">
+          <div class="list">
+            <div class="list-item" v-for="(i, id) in item.list" :key="id">
+              <div class="title">本{{ text }}关键工作任务</div>
+              <div class="value">{{ i.title }}</div>
+              <div class="title">工作完成情况</div>
+              <div class="value">{{ i.content }}</div>
+            </div>
+          </div>
+          <div class="summary">
+            <div class="title">{{ item.next ? '需协调工作' : `本${text}工作总结` }}</div>
+            <div class="value">{{ item.summary }}</div>
+          </div>
+        </div>
+      </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
@@ -141,6 +161,9 @@ export default {
     ...mapGetters(['orgId', 'org']),
     orgName() {
       return this.org.find(item => item.orgid === this.orgId).orgname
+    },
+    text() {
+      return this.row.type === 1 ? '周' : '月'
     }
   },
   watch: {
@@ -214,13 +237,51 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
-.header {
-  display: flex;
-  justify-content: space-between;
-}
 .content {
-  margin-top: 20px;
+  margin-top: 10px;
+  .item {
+    border-bottom: 1px solid #EFEFEF;
 
+    .summary {
+      padding: 16px 50px;
+    }
+
+    .list {
+      border-bottom: 1px solid #EFEFEF;
+      padding: 16px 50px;
+    }
+
+    .title {
+      line-height: 30px;
+      color: #999999;
+    }
+
+    .value {
+      color: #000000;
+      line-height: 20px;
+      margin: 10px;
+    }
+  }
+}
+.header {
+  padding: 0 50px 30px 50px;
+  border-bottom: 1px solid #EFEFEF;
+
+  .item {
+    margin-bottom: 8px;
+    font-size: 14px;
+    display: flex;
+
+    .label {
+      color: #999999;
+      min-width: 70px;
+      margin-right: 20px;
+    }
+
+    .value {
+      color: #000000;
+    }
+  }
 }
 .avatar {
   width: 100%;

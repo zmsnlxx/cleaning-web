@@ -31,6 +31,11 @@
           <span>{{ scope.row.oreaddress }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="楼层" align="center" width="200">
+        <template slot-scope="scope">
+          <span>{{ scope.row.floor }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="是否开启非工作人员扫码" align="center" width="200">
         <template slot-scope="scope">
           {{ scope.row.ispersonnel ? '是' : '否' }}
@@ -79,6 +84,9 @@
         <el-form-item label="地址" label-width="180px" prop="oreaddress">
           <el-input v-model="form.oreaddress" autocomplete="off" placeholder="请输入" />
         </el-form-item>
+        <el-form-item label="楼层" label-width="180px" prop="floor">
+          <el-input v-model="form.floor" autocomplete="off" placeholder="请输入楼层，多个楼层以,符号分割 例：一楼,三楼" />
+        </el-form-item>
         <el-form-item label="是否开启非工作人员扫码" label-width="180px">
           <el-switch v-model="ispersonnel" />
         </el-form-item>
@@ -108,6 +116,7 @@ export default {
       rules: {
         orgname: [{ required: true, message: '组织名称不能为空' }],
         oreaddress: [{ required: true, message: '地址不能为空' }],
+        floor: [{ required: true, message: '楼层不能为空' }],
       },
       total: 0,
       fileList: [],
@@ -121,7 +130,7 @@ export default {
       listLoading: true,
       ispersonnel: true,
       isphoto: true,
-      form: { orgname: '', oreaddress: '', ispersonnel: 1, isphoto: 1 },
+      form: { orgname: '', oreaddress: '', ispersonnel: 1, isphoto: 1, floor: '' },
       isEdit: false,
       currentId: ''
     }
