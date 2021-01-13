@@ -36,6 +36,11 @@
           {{ (params.page - 1) * params.pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
+      <el-table-column label="申领人">
+        <template slot-scope="scope">
+          {{ scope.row.pername }}
+        </template>
+      </el-table-column>
       <el-table-column label="申领时间">
         <template slot-scope="scope">
           {{ parseTime(scope.row.createTime) }}
