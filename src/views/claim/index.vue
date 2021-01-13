@@ -46,6 +46,11 @@
           {{ parseTime(scope.row.createTime) }}
         </template>
       </el-table-column>
+      <el-table-column label="楼层">
+        <template slot-scope="scope">
+          {{ scope.row.floor }}
+        </template>
+      </el-table-column>
       <el-table-column label="名称" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
