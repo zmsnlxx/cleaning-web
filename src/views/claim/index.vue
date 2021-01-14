@@ -151,11 +151,13 @@ export default {
       const params = { pername, startTime, endTime, page: 1, pageSize: this.total }
       const { data: { list } } = await getApplyList(params)
       const header = [
+        { label: '申领人', width: '300', prop: 'pername' },
         { label: '申领时间', width: '300', prop: 'createTime' },
+        { label: '楼层', width: '300', prop: 'floor' },
         { label: '名称', width: '300', prop: 'name' },
         { label: '数量', width: '400', prop: 'num' },
       ]
-      const data = list.map(item => ({ createTime: this.parseTime(item.createTime), name: item.name, num: `${item.num}${item.unit}` }))
+      const data = list.map(item => ({ createTime: this.parseTime(item.createTime), name: item.name, num: `${item.num}${item.unit}`, pername: item.pername, floor: item.floor }))
       await this.makeExcel([{ header, data }], `${this.startDayText ? this.startDayText + '-' : ''}${this.endDayText}申领记录`)
       this.$message.success('下载成功！')
       this.listLoading = false
