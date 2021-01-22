@@ -167,7 +167,7 @@ export default {
           const params = this.isEdit ? Object.assign({}, this.row, { suppliesId: this.suppliesId }) : this.row
           api(params).then(() => {
             this.dialogVisible = false
-            this.$message.success('删除成功!')
+            this.$message.success(`${this.isEdit ? '修改' : '添加'}成功!`)
             this.fetchData()
           })
         } else {
