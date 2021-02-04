@@ -2,21 +2,19 @@
   "name": "cleaning-web",
   "version": "0.0.1",
   "scripts": {
-    "dev": "vue-cli-service serve",
-    "build:prod": "vue-cli-service build",
-    "build:stage": "vue-cli-service build --mode staging",
-    "preview": "node build/index.js --preview",
-    "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
-    "lint": "eslint --ext .js,.vue src",
-    "test:unit": "jest --clearCache && vue-cli-service test:unit",
-    "test:ci": "npm run lint && npm run test:unit"
+    "dev": "cross-env BASE=0 vue-cli-service serve",
+    "dev:prod": "cross-env BASE=1 vue-cli-service serve",
+    "build": "cross-env BASE=1 vue-cli-service build",
+    "build:test": "cross-env BASE=0 vue-cli-service build"
   },
   "dependencies": {
     "axios": "0.18.1",
     "core-js": "3.6.5",
+    "cross-env": "^7.0.3",
     "dayjs": "^1.8.36",
     "echarts": "4.2.1",
     "element-ui": "2.13.2",
+    "exceljs": "^4.1.1",
     "file-saver": "2.0.1",
     "js-cookie": "2.2.0",
     "lodash": "^4.17.20",
@@ -26,8 +24,7 @@
     "vue": "2.6.10",
     "vue-router": "3.0.6",
     "vuex": "3.1.0",
-    "xlsx": "0.14.1",
-    "exceljs": "^4.1.1"
+    "xlsx": "0.14.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "4.4.4",

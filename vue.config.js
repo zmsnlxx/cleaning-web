@@ -60,6 +60,14 @@ module.exports = {
       }
     ])
 
+    config.plugin('define').tap(args => {
+      const env = args[0]['process.env']
+
+      env.BASE = +process.env.BASE
+
+      return args
+    })
+
     // when there are many pages, it will cause too many meaningless requests
     config.plugins.delete('prefetch')
 
