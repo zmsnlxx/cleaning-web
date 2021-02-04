@@ -91,6 +91,23 @@
         <el-form-item label="单位" prop="unit">
           <el-input v-model="row.unit" placeholder="请输入商品单位" />
         </el-form-item>
+        <el-form-item label="商品图" required>
+          <el-upload
+            class="avatar-uploader"
+            :show-file-list="false"
+            auto-upload
+            :data="uploadParams"
+            accept="image/*"
+            :on-success="handleSuccess"
+            :before-upload="handlebeforeUpload"
+            action="https://up-z0.qiniup.com">
+            <img v-if="row.pic" :src="`http://cdn.fledchina.com/${row.pic}`" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon" />
+          </el-upload>
+          <div class="close" v-if="row.pic" @click="handleRemove">
+            <i class="el-icon-circle-close" />
+          </div>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
@@ -103,6 +120,7 @@
 <script>
 import { getSuppliesList, addSupplies, getSuppliesTypes, updateSupplies, delSupplies } from '@/api/supplies'
 import { mapGetters } from 'vuex'
+import { getQiNiuToken } from '@/api/mall'
 
 export default {
   data() {
@@ -120,9 +138,13 @@ export default {
       list: [],
       listLoading: true,
       dialogVisible: false,
-      row: { name: '', type: '', brand: '', spec: '', unit: '' },
+      row: { name: '', type: '', brand: '', spec: '', unit: '', pic: '' },
       isEdit: false,
       suppliesId: '',
+
+      uploadParams: { token: '', key: '' },
+      fileList: [],
+
     }
   },
   async created() {
@@ -160,7 +182,28 @@ export default {
   },
 
   methods: {
+    handleSuccess(res) {
+      this.row.pic = res.key
+    },
+    handlebeforeUpload() {
+      this.uploadParams.key = encodeURI(Date.now() + '' + Math.floor(Math.random() * 10000))
+      return new Promise((resolve, reject) => {
+        getQiNiuToken().then(res => {
+          const { token } = res.data
+          this.uploadParams.token = token
+          resolve(true)
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+    handleRemove() {
+      this.$confirm(`确定移除 ${ this.row.pic }？`).then(() => {
+        this.row.pic = ''
+      })
+    },
     updateData() {
+      if (!this.row.pic) return this.$message.error('请上传图片！')
       this.$refs.form.validate((valid) => {
         if (valid) {
           const api = this.isEdit ? updateSupplies : addSupplies
@@ -184,7 +227,12 @@ export default {
     open(type, row) {
       if (row) {
         Object.keys(this.row).forEach(key => {
-          this.row[key] = row[key]
+          if (key === 'pic') {
+            const path = 'http://cdn.fledchina.com/'
+            this.row.pic = row.pic.substring(path.length)
+          } else {
+            this.row[key] = row[key]
+          }
         })
         this.suppliesId = row.suppliesId
       }
@@ -253,5 +301,36 @@ export default {
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
+}
+</style>
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.close {
+  position: absolute;
+  left: 170px;
+  top: -20px;
+  font-size: 20px;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>
