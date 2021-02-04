@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="search-box">
       <el-form class="left" :model="params" label-width="80px">
-        <el-form-item label="申领时间">
+        <el-form-item label="消耗时间">
           <el-date-picker
             class="date-pick"
             v-model="startTime"
@@ -36,12 +36,12 @@
           {{ (params.page - 1) * params.pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="申领人">
+      <el-table-column label="消耗人">
         <template slot-scope="scope">
           {{ scope.row.pername }}
         </template>
       </el-table-column>
-      <el-table-column label="申领时间">
+      <el-table-column label="消耗时间">
         <template slot-scope="scope">
           {{ parseTime(scope.row.createTime) }}
         </template>
@@ -94,7 +94,7 @@ export default {
         pageSize: 10,
         startTime: '',
         endTime: '',
-        type: '1'
+        type: '2'
       },
       startTime: '',
       endTime: '',
@@ -152,14 +152,14 @@ export default {
       const params = { pername, startTime, endTime, page: 1, pageSize: this.total }
       const { data: { list } } = await getApplyList(params)
       const header = [
-        { label: '申领人', width: '300', prop: 'pername' },
-        { label: '申领时间', width: '300', prop: 'createTime' },
+        { label: '消耗人', width: '300', prop: 'pername' },
+        { label: '消耗时间', width: '300', prop: 'createTime' },
         { label: '楼层', width: '300', prop: 'floor' },
         { label: '名称', width: '300', prop: 'name' },
         { label: '数量', width: '400', prop: 'num' },
       ]
       const data = list.map(item => ({ createTime: this.parseTime(item.createTime), name: item.name, num: `${item.num}${item.unit}`, pername: item.pername, floor: item.floor }))
-      await this.makeExcel([{ header, data }], `${this.startDayText ? this.startDayText + '-' : ''}${this.endDayText}申领记录`)
+      await this.makeExcel([{ header, data }], `${this.startDayText ? this.startDayText + '-' : ''}${this.endDayText}消耗记录`)
       this.$message.success('下载成功！')
       this.listLoading = false
     },

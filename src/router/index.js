@@ -223,6 +223,20 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/consume',
+    component: Layout,
+    redirect: '/consume/index',
+    meta: { icon: 'el-icon-s-comment' },
+    children: [
+      {
+        path: 'index',
+        name: 'Consume',
+        component: () => import('@/views/consume/index'),
+        meta: { title: '消耗记录', icon: 'el-icon-s-comment' }
+      }
+    ]
+  },
 
 
   // 404 page must be placed at the end !!!
