@@ -58,7 +58,12 @@
       </el-table-column>
       <el-table-column label="数量" align="center">
         <template slot-scope="scope">
-          {{ scope.row.num }}{{ scope.row.unit }}
+          {{ scope.row.num }}
+        </template>
+      </el-table-column>
+      <el-table-column label="规格/单位" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.spec }}/{{ scope.row.unit }}
         </template>
       </el-table-column>
     </el-table>
